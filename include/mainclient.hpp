@@ -104,13 +104,13 @@ class ClientHandle {
 
                 if(message->get_method() == CODE_GETTER_METHOD_ID) {
 
-                    std::cout << "Location Code received from Code-Service\n";
+                    std::cout << "Location Code received from Code-Service\n[Code: ";
                     mPayload = message->get_payload();
                     auto length = mPayload->get_length();
                     
                     for(vsomeip::byte_t i{};i<length;i++)
                         mLocCode += (char)mPayload->get_data()[i];
-                    std::cout << mLocCode << "\n";
+                    std::cout << mLocCode << "]\n";
 
                     mApp->release_service(SERVICE_ID,INSTANCE0_ID);
                     mApp->request_service(SERVICE_ID,INSTANCE1_ID);
@@ -125,7 +125,13 @@ class ClientHandle {
 
                 } else if(message->get_method() == REPORT_GETTER_METHOD_ID) {
 
-                    std::cout << "Report reveived from Report-Service\n";
+                    std::cout << "Report reveived from Report-Service\n[Temperature: ";
+                    mPayload = message->get_payload();
+                    auto l = mPayload->get_length();
+
+                    for(int i{};i<l;i++) {
+                        std::cout << (char)mPayload->get_data()[i];
+                    } std::cout << "]\n";
 
                 } else {
 
