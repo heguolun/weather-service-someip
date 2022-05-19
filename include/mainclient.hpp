@@ -26,7 +26,7 @@ class ClientHandle {
                 
                 mApp->register_availability_handler(
                     SERVICE_ID,
-                    INSTANCE0_ID,
+                    vsomeip::ANY_INSTANCE,
                     std::bind(&ClientHandle::onAvailable, this,
                         std::placeholders::_1,std::placeholders::_2,std::placeholders::_3
                     )
@@ -34,7 +34,7 @@ class ClientHandle {
 
                 mApp->register_message_handler(
                     SERVICE_ID,
-                    INSTANCE0_ID,
+                    vsomeip::ANY_INSTANCE,
                     vsomeip::ANY_METHOD,
                     std::bind(&ClientHandle::onMessage,this,std::placeholders::_1)
                 );
@@ -76,22 +76,26 @@ class ClientHandle {
         void onAvailable(vsomeip::service_t service, vsomeip::instance_t instance, bool available) {
             std::cout << (available ? "available" : "Not available") << "\n";
 
-            if(available) {
-                std::shared_ptr<vsomeip::message> request = vsomeip::runtime::get()->create_request();
-                request->set_service(SERVICE_ID);
-                request->set_method(CODE_GETTER_METHOD_ID);
-                request->set_instance(INSTANCE0_ID);
+            if(instance == INSTANCE0_ID) {
+                if(available) {
+                    std::shared_ptr<vsomeip::message> request = vsomeip::runtime::get()->create_request();
+                    request->set_service(SERVICE_ID);
+                    request->set_method(CODE_GETTER_METHOD_ID);
+                    request->set_instance(INSTANCE0_ID);
 
-                std::vector<vsomeip::byte_t> data;
-                for(auto& ch:mLocName) {
-                    data.push_back((vsomeip::byte_t)ch);
+                    std::vector<vsomeip::byte_t> data;
+                    for(auto& ch:mLocName) {
+                        data.push_back((vsomeip::byte_t)ch);
+                    }
+
+                    mPayload->set_data(data);
+                    request->set_payload(mPayload);
+                    mApp->send(request);
+
                 }
+            } else if(instance == INSTANCE1_ID) {
 
-                mPayload->set_data(data);
-                request->set_payload(mPayload);
-                mApp->send(request);
-
-            } 
+            }
             //std::cout << "FLow\n";
         }
         void onMessage(const std::shared_ptr<vsomeip::message>& message) {
@@ -108,6 +112,8 @@ class ClientHandle {
                         mLocCode += (char)mPayload->get_data()[i];
                     std::cout << mLocCode << "\n";
 
+                    mApp->release_service(SERVICE_ID,INSTANCE0_ID);
+                    mApp->request_service(SERVICE_ID,INSTANCE1_ID);
                     // prepare a new request for the Report-Service
                     std::shared_ptr<vsomeip::message> request = vsomeip::runtime::get()->create_request();
                     request->set_service(SERVICE_ID);

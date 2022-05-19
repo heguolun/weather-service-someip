@@ -69,7 +69,6 @@ class ServiceHandle {
         void onMessage(const std::shared_ptr<vsomeip::message>& message) {
             std::cout << "Finding out Location code for . . .\n";
             if(message->get_message_type() == vsomeip::message_type_e::MT_REQUEST) {
-                std::cout << "Received a request\n";
                 mPayload = message->get_payload();
                 fetchCode();
                 std::shared_ptr<vsomeip::message> response = vsomeip::runtime::get()->create_response(message);

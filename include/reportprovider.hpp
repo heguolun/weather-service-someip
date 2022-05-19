@@ -4,6 +4,7 @@
 
 #include <vsomeip/vsomeip.hpp>
 #include "configfile.hpp"
+#include <sstream>
 
 class ServiceHandle {
     public:
@@ -32,6 +33,8 @@ class ServiceHandle {
                     std::bind(&ServiceHandle::onMessage,this,std::placeholders::_1)
                 );
 
+                mPayload = vsomeip::runtime::get()->create_payload();
+
                 mApp->offer_service(SERVICE_ID,INSTANCE1_ID);
 
                 return true;
@@ -42,7 +45,8 @@ class ServiceHandle {
         }
     private:
         std::shared_ptr<vsomeip::application> mApp;
-        std::shared_ptr<vsomeip::message> mPayload;
+        std::shared_ptr<vsomeip::payload> mPayload;
+        uint32_t mLocCode;
 
     public:
         void onState(vsomeip::state_type_e state) {
@@ -63,7 +67,43 @@ class ServiceHandle {
         void onMessage(const std::shared_ptr<vsomeip::message>& message) {
             if(message->get_message_type() == vsomeip::message_type_e::MT_REQUEST) {
                 std::cout << "Received a request. . .\n";
+                std::stringstream ss;
+                mPayload = message->get_payload();
+                auto l = mPayload->get_length();
+                std::string locCode;
+                for(int i{};i<l;i++) {
+                    locCode += (char)mPayload->get_data()[i];
+                } 
+                ss << locCode;
+                ss >> mLocCode;
+                std::cout << mLocCode << "\n";
+                
+                fetchReport();
+
+                std::shared_ptr<vsomeip::message> response = vsomeip::runtime::get()->create_response(message);
+                response->set_payload(mPayload);
+                // response->set_method(REPORT_GETTER_METHOD_ID);
+                mApp->send(response);
+                std::cout << "Report sent to mainclient. . .\n";
 
             }
+        }
+
+        void fetchReport() {
+            uint32_t temperature{};
+            if(mLocCode == 111045) {
+                temperature = 32;
+            } else {
+                temperature = 44;
+            }
+            std::stringstream ss;
+            ss << temperature;
+            std::string temp;
+            ss >> temp;
+            std::vector<vsomeip::byte_t> data;
+            for(auto& ch:temp) {
+                data.push_back(ch);
+            }
+            mPayload->set_data(data);
         }
 };
