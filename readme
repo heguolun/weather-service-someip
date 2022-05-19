@@ -1,0 +1,10 @@
+This example will demonstrate a weather application
+main consumer will request location code from a service
+then it will use this location code to request it's weather report
+
+Consumer:
+    our main application
+
+Provider:
+    Location code Provider
+    Weather report Provider

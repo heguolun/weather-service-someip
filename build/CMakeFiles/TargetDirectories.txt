@@ -1,0 +1,5 @@
+/home/fev/work/prac/someip/someipexample/build/CMakeFiles/rebuild_cache.dir
+/home/fev/work/prac/someip/someipexample/build/CMakeFiles/edit_cache.dir
+/home/fev/work/prac/someip/someipexample/build/CMakeFiles/reportprovider.dir
+/home/fev/work/prac/someip/someipexample/build/CMakeFiles/codeprovider.dir
+/home/fev/work/prac/someip/someipexample/build/CMakeFiles/mainclient.dir
