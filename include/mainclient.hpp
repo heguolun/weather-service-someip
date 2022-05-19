@@ -26,22 +26,22 @@ class ClientHandle {
                 
                 mApp->register_availability_handler(
                     SERVICE_ID,
-                    INSTANCE_ID,
+                    INSTANCE0_ID,
                     std::bind(&ClientHandle::onAvailable, this,
                         std::placeholders::_1,std::placeholders::_2,std::placeholders::_3
                     )
                 );
 
                 mApp->register_message_handler(
-                    vsomeip::ANY_SERVICE,
-                    vsomeip::ANY_INSTANCE,
+                    SERVICE_ID,
+                    INSTANCE0_ID,
                     vsomeip::ANY_METHOD,
                     std::bind(&ClientHandle::onMessage,this,std::placeholders::_1)
                 );
 
                 mPayload = vsomeip::runtime::get()->create_payload();
 
-                mApp->request_service(SERVICE_ID,INSTANCE_ID);
+                mApp->request_service(SERVICE_ID,INSTANCE0_ID);
 
                 return true;
             }
@@ -75,11 +75,12 @@ class ClientHandle {
         }
         void onAvailable(vsomeip::service_t service, vsomeip::instance_t instance, bool available) {
             std::cout << (available ? "available" : "Not available") << "\n";
+
             if(available) {
                 std::shared_ptr<vsomeip::message> request = vsomeip::runtime::get()->create_request();
                 request->set_service(SERVICE_ID);
                 request->set_method(CODE_GETTER_METHOD_ID);
-                request->set_instance(INSTANCE_ID);
+                request->set_instance(INSTANCE0_ID);
 
                 std::vector<vsomeip::byte_t> data;
                 for(auto& ch:mLocName) {
@@ -94,6 +95,7 @@ class ClientHandle {
             //std::cout << "FLow\n";
         }
         void onMessage(const std::shared_ptr<vsomeip::message>& message) {
+
             if(message->get_message_type() == vsomeip::message_type_e::MT_RESPONSE) {
 
                 if(message->get_method() == CODE_GETTER_METHOD_ID) {
@@ -109,18 +111,20 @@ class ClientHandle {
                     // prepare a new request for the Report-Service
                     std::shared_ptr<vsomeip::message> request = vsomeip::runtime::get()->create_request();
                     request->set_service(SERVICE_ID);
-                    request->set_instance(INSTANCE_ID);
+                    request->set_instance(INSTANCE1_ID);
                     request->set_method(REPORT_GETTER_METHOD_ID);
 
                     request->set_payload(mPayload);
                     mApp->send(request);
 
-                } else if(
-                    message->get_method() == REPORT_GETTER_METHOD_ID
-                ) {
+                } else if(message->get_method() == REPORT_GETTER_METHOD_ID) {
+
+                    std::cout << "Report reveived from Report-Service\n";
 
                 } else {
+
                     std::cout << "Received ANY_RESPONSE\n";
+
                 }
 
             }

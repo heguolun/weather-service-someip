@@ -20,7 +20,7 @@ class ServiceHandle {
                 
                 mApp->register_availability_handler(
                     SERVICE_ID,
-                    INSTANCE_ID,
+                    INSTANCE0_ID,
                     std::bind(&ServiceHandle::onAvailable, this,
                         std::placeholders::_1,std::placeholders::_2,std::placeholders::_3
                     )
@@ -28,13 +28,13 @@ class ServiceHandle {
 
                 mApp->register_message_handler(
                     SERVICE_ID,
-                    INSTANCE_ID,
+                    INSTANCE0_ID,
                     CODE_GETTER_METHOD_ID,
                     std::bind(&ServiceHandle::onMessage,this,std::placeholders::_1)
                 );
 
                 //mApp->request_service(SERVICE_ID,INSTANCE_ID);
-                mApp->offer_service(SERVICE_ID,INSTANCE_ID);
+                mApp->offer_service(SERVICE_ID,INSTANCE0_ID);
                 return true;
             }
         }
@@ -69,6 +69,7 @@ class ServiceHandle {
         void onMessage(const std::shared_ptr<vsomeip::message>& message) {
             std::cout << "Finding out Location code for . . .\n";
             if(message->get_message_type() == vsomeip::message_type_e::MT_REQUEST) {
+                std::cout << "Received a request\n";
                 mPayload = message->get_payload();
                 fetchCode();
                 std::shared_ptr<vsomeip::message> response = vsomeip::runtime::get()->create_response(message);

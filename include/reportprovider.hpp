@@ -19,20 +19,20 @@ class ServiceHandle {
                 
                 mApp->register_availability_handler(
                     SERVICE_ID,
-                    INSTANCE_ID,
+                    INSTANCE1_ID,
                     std::bind(&ServiceHandle::onAvailable, this,
                         std::placeholders::_1,std::placeholders::_2,std::placeholders::_3
                     )
                 );
 
                 mApp->register_message_handler(
-                    vsomeip::ANY_SERVICE,
-                    vsomeip::ANY_INSTANCE,
-                    vsomeip::ANY_METHOD,
+                    SERVICE_ID,
+                    INSTANCE1_ID,
+                    REPORT_GETTER_METHOD_ID,
                     std::bind(&ServiceHandle::onMessage,this,std::placeholders::_1)
                 );
 
-                mApp->request_service(SERVICE_ID,INSTANCE_ID);
+                mApp->offer_service(SERVICE_ID,INSTANCE1_ID);
 
                 return true;
             }
@@ -61,6 +61,9 @@ class ServiceHandle {
             std::cout << (available ? "available" : "Not available") << "\n";   
         }
         void onMessage(const std::shared_ptr<vsomeip::message>& message) {
-            std::cout << "Received a message <<<< Send a message\n";
+            if(message->get_message_type() == vsomeip::message_type_e::MT_REQUEST) {
+                std::cout << "Received a request. . .\n";
+
+            }
         }
 };
