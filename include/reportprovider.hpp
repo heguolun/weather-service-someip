@@ -5,6 +5,7 @@
 #include <vsomeip/vsomeip.hpp>
 #include "configfile.hpp"
 #include <sstream>
+#include <curl/curl.h>
 
 class ServiceHandle {
     public:

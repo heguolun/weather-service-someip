@@ -26,4 +26,4 @@ add_executable(
     reportprovider
     ../src/reportprovider.cpp
 )
-target_link_libraries(reportprovider vsomeip3 ${Boost_LIBRARIES})
+target_link_libraries(reportprovider vsomeip3 ${Boost_LIBRARIES} curl)

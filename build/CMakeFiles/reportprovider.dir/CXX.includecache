@@ -17,6 +17,8 @@ configfile.hpp
 ../include/configfile.hpp
 sstream
 -
+curl/curl.h
+-
 
 /home/fev/vsomeip/interface/vsomeip/application.hpp
 chrono
