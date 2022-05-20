@@ -3,6 +3,7 @@
 
 CMakeFiles/reportprovider.dir/src/reportprovider.cpp.o
  ../include/configfile.hpp
+ ../include/json.hpp
  ../include/reportprovider.hpp
  /home/fev/vsomeip/interface/vsomeip/application.hpp
  /home/fev/vsomeip/interface/vsomeip/constants.hpp
